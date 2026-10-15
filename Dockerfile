@@ -1,0 +1,23 @@
+# Utilisation de la version LTS de Node (Linux Debian)
+FROM node:lts-bookworm-slim
+
+# Définition du dossier de travail dans le conteneur
+WORKDIR /app
+
+# Copie des fichiers de configuration NPM
+COPY package*.json ./
+
+# Installation des dépendances (sqlite3 compilera sa version Linux ARM64 ici)
+RUN npm install --omit=dev
+
+# Copie du reste du code
+COPY . .
+
+# La base Laravel n'est pas copiée dans l'image : on monte son dossier sur /data au lancement
+ENV DB_PATH=/data/database.sqlite
+
+# Indique le port sur lequel l'API écoute
+EXPOSE 3000
+
+# Commande de démarrage officielle
+CMD ["node", "index.js"]
